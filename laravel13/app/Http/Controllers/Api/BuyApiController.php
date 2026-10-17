@@ -230,27 +230,11 @@ class BuyApiController extends Controller
     private static function encodeTransfer(string $to, string $amountWei): string
     {
         // transfer(address,uint256) selector = 0xa9059cbb
-        $to = ltrim($to, '0x');
-        $to = str_pad(strtolower($to), 64, '0', STR_PAD_LEFT);
-        $amount = self::toHex256($amountWei);
+        $to = strtolower(str_starts_with($to, '0x') ? substr($to, 2) : $to);
+        $to = str_pad($to, 64, '0', STR_PAD_LEFT);
+        // uint256 大数十进制 -> 256bit 十六进制（web3p 标准库）
+        $hex = strtolower(Utils::toBn($amountWei)->toHex(true));
+        $amount = str_pad($hex, 64, '0', STR_PAD_LEFT);
         return '0xa9059cbb' . $to . $amount;
-    }
-
-    /**
-     * 十进制大数字符串 -> 256bit 左补零十六进制（ABI uint256 编码）
-     */
-    private static function toHex256(string $dec): string
-    {
-        $dec = ltrim($dec, '0');
-        if ($dec === '') {
-            return str_repeat('0', 64);
-        }
-        $alpha = '0123456789abcdef';
-        $hex = '';
-        while (bccomp($dec, '0') > 0) {
-            $hex = $alpha[(int) bcmod($dec, '16')] . $hex;
-            $dec = bcdiv($dec, '16', 0);
-        }
-        return str_pad($hex, 64, '0', STR_PAD_LEFT);
     }
 }
