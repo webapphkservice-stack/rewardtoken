@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Services\RpcService;
+use Web3\Contracts\Ethabi;
+use Web3\Utils;
+
+class StatusController extends Controller
+{
+    public function index()
+    {
+        $eventSignature = 'UserRegistered(address,address)';
+
+        $rpc = RpcService::getInstance();
+
+        try {
+            $contractAddress = readContractAddress();
+            if (!$contractAddress) {
+                throw new \Exception(t('contract_not_deployed'));
+            }
+
+            $accounts = $rpc->call('eth_accounts');
+            $admin = $accounts[0] ?? '';
+
+            // 读取代币名称
+            $nameSig = substr(Utils::sha3('name()'), 0, 10);
+            $nameResult = $rpc->call('eth_call', [['to' => $contractAddress, 'data' => $nameSig], 'latest']);
+            $name = decodeString($nameResult);
+
+            // 读取代币符号
+            $symbolSig = substr(Utils::sha3('symbol()'), 0, 10);
+            $symbolResult = $rpc->call('eth_call', [['to' => $contractAddress, 'data' => $symbolSig], 'latest']);
+            $symbol = decodeString($symbolResult);
+
+            // 读取总供应量
+            $totalSupplySig = substr(Utils::sha3('totalSupply()'), 0, 10);
+            $totalSupplyResult = $rpc->call('eth_call', [['to' => $contractAddress, 'data' => $totalSupplySig], 'latest']);
+            $totalSupply = hexdec($totalSupplyResult) / 10**18;
+
+            // 读取每次邀请奖励
+            $inviteRewardSig = substr(Utils::sha3('inviteReward()'), 0, 10);
+            $inviteRewardResult = $rpc->call('eth_call', [['to' => $contractAddress, 'data' => $inviteRewardSig], 'latest']);
+            $inviteReward = hexdec($inviteRewardResult) / 10**18;
+
+            // 读取推荐比例
+            $referralLevels = [];
+            for ($i = 0; $i < 3; $i++) {
+                $data = encodeCall('referralLevels', ['uint256'], [$i]);
+                $result = $rpc->call('eth_call', [['to' => $contractAddress, 'data' => $data], 'latest']);
+                $referralLevels[] = hexdec($result);
+            }
+
+            // 获取最新区块信息
+            $latestBlockNumber = $rpc->call('eth_blockNumber');
+            $latestBlock = $rpc->call('eth_getBlockByNumber', [$latestBlockNumber, false]);
+            $blockInfo = [];
+            if ($latestBlock) {
+                $blockInfo = [
+                    'number' => isset($latestBlock['number']) ? hexdec($latestBlock['number']) : null,
+                    'hash' => $latestBlock['hash'] ?? null,
+                    'timestamp' => isset($latestBlock['timestamp']) ? hexdec($latestBlock['timestamp']) : null,
+                    'transactions' => isset($latestBlock['transactions']) ? count($latestBlock['transactions']) : 0,
+                    'gas_used' => isset($latestBlock['gasUsed']) ? hexdec($latestBlock['gasUsed']) : 0,
+                    'gas_limit' => isset($latestBlock['gasLimit']) ? hexdec($latestBlock['gasLimit']) : 0,
+                    'size' => isset($latestBlock['size']) ? hexdec($latestBlock['size']) : 0,
+                    'miner' => $latestBlock['miner'] ?? null
+                ];
+            }
+
+            // 统计注册钱包数量
+            $topic = Utils::sha3($eventSignature);
+            $logs = $rpc->call('eth_getLogs', [[
+                'address' => $contractAddress,
+                'fromBlock' => '0x0',
+                'toBlock' => $latestBlockNumber ?? 'latest',
+                'topics' => [$topic]
+            ]]);
+            $walletCount = is_array($logs) ? count($logs) : 0;
+
+            return response()->json([
+                'success' => true,
+                'contract_address' => $contractAddress,
+                'admin' => $admin,
+                'name' => $name,
+                'symbol' => $symbol,
+                'total_supply' => $totalSupply,
+                'invite_reward' => $inviteReward,
+                'referral_levels' => $referralLevels,
+                'wallet_count' => $walletCount,
+                'block' => $blockInfo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+}

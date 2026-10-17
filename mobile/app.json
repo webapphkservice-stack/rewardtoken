@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "邀请奖励代币",
+    "slug": "invite-reward-token",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "irt",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.invite.rewardtoken"
+    },
+    "android": {
+      "statusBar": {
+        "backgroundColor": "transparent",
+        "barStyle": "dark-content",
+        "translucent": true
+      },
+      "navigationBar": {
+        "backgroundColor": "#ffffff",
+        "barStyle": "dark-content",
+        "translucent": true,
+        "edgeToEdgeEnabled": true
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.invite.rewardtoken"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-status-bar",
+      "expo-splash-screen"
+    ],
+    "extra": {
+      "apiBaseUrl": "http://localhost:8000"
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

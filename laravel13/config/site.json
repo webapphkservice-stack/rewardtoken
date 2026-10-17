@@ -1,0 +1,12 @@
+{
+    "site_name": "邀请奖励代币",
+    "site_name_full": "邀请奖励代币 (IRT)",
+    "site_description": "基于 Geth 的三级推荐奖励系统",
+    "symbol": "IRT",
+    "rpc_url": "http:\/\/localhost:8545",
+    "rpc_timeout": 30,
+    "transfer_fee": 2.5,
+    "token_purchase_price_usdt": 10,
+    "token_purchase_amount": 1000,
+    "token_purchase_bonus": 200
+}

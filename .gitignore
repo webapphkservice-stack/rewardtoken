@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment / secrets
+.env
+laravel13/.env
+
+# Sensitive runtime data (credentials, orders, wallet keys)
+laravel13/storage/accounts.json
+laravel13/storage/orders.json
+laravel13/storage/geth/
+laravel13/storage/logs/
+
+# Framework caches
+laravel13/storage/framework/cache/
+laravel13/storage/framework/sessions/
+laravel13/storage/framework/views/
+laravel13/storage/framework/cache/data/
+
+# React Native / Metro
+mobile/.bundle/
+mobile/android/build/
+mobile/ios/Pods/
