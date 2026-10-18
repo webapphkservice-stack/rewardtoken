@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '../src/context/auth';
+import { LanguageProvider } from '../src/i18n/LanguageContext';
 
 export default function RootLayout() {
   const [roboto] = useRoboto({ RobotoSlab_600SemiBold, RobotoSlab_700Bold });
@@ -16,17 +17,19 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: '#ffffff' },
-          }}
-        >
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <StatusBar style="dark" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: '#ffffff' },
+            }}
+          >
+            <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          </Stack>
+        </AuthProvider>
+      </LanguageProvider>
     </SafeAreaProvider>
   );
 }

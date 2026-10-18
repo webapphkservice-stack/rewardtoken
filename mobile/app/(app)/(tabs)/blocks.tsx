@@ -4,16 +4,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BrandHeader } from '../../../src/components/BrandHeader';
 import { SectionHeading } from '../../../src/components/Cond';
 import { Empty, Loader } from '../../../src/components/StateView';
+import { useLanguage } from '../../../src/i18n/LanguageContext';
 import { useBlocks } from '../../../src/hooks/data';
 import type { BlockSummary } from '../../../src/api/types';
 import { colors, fonts, radius, spacing } from '../../../src/theme/theme';
 
-function fmtTime(ts?: number): string {
+function fmtTime(ts?: number, localeFmt = 'zh-CN'): string {
   if (!ts) return '—';
-  return new Date(ts * 1000).toLocaleTimeString('zh-CN', { hour12: false });
+  return new Date(ts * 1000).toLocaleTimeString(localeFmt, { hour12: false });
 }
 
 export default function BlocksScreen() {
+  const { t, locale } = useLanguage();
+  const fmtLocale = locale === 'zh-cn' || locale === 'zh-tw' ? 'zh-CN' : 'en-US';
   const { data, loading, error, refresh, loadMore, loadingMore } = useBlocks(15);
 
   if (loading) {
@@ -28,10 +31,14 @@ export default function BlocksScreen() {
     return (
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
         <BrandHeader />
-        <Empty text="加载失败" hint={error} />
+        <Empty text={t('load_failed', '加载失败')} hint={error} />
       </SafeAreaView>
     );
   }
+
+  const headerTitle = data?.latest != null
+    ? `${t('latest_blocks', '最新区块')} · ${t('current_block', '当前')} ${data.latest}`
+    : t('latest_blocks', '最新区块');
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
@@ -44,29 +51,33 @@ export default function BlocksScreen() {
         showsVerticalScrollIndicator={false}
         onEndReached={loadMore}
         onEndReachedThreshold={0.3}
-        renderItem={({ item }) => <BlockCard block={item} />}
-        ListHeaderComponent={
-          <View>
-            <SectionHeading title={`最新区块${data?.latest != null ? ` · 当前 ${data.latest}` : ''}`} />
-          </View>
-        }
-        ListEmptyComponent={<Empty text="暂无区块" />}
-        ListFooterComponent={loadingMore ? <Loader text="加载更多…" /> : null}
+        renderItem={({ item }) => <BlockCard block={item} t={t} fmtLocale={fmtLocale} />}
+        ListHeaderComponent={<SectionHeading title={headerTitle} />}
+        ListEmptyComponent={<Empty text={t('no_blocks', '暂无区块')} />}
+        ListFooterComponent={loadingMore ? <Loader text={t('loading_more', '加载更多…')} /> : null}
       />
     </SafeAreaView>
   );
 }
 
-function BlockCard({ block }: { block: BlockSummary }) {
+function BlockCard({
+  block,
+  t,
+  fmtLocale,
+}: {
+  block: BlockSummary;
+  t: (k: string, f?: string) => string;
+  fmtLocale: string;
+}) {
   return (
     <View style={styles.card}>
       <View style={styles.cardTop}>
-        <Text style={styles.number}>区块 #{block.number}</Text>
+        <Text style={styles.number}>{t('block', '区块')} #{block.number}</Text>
         <Text style={styles.hash}>{block.transactions} txs</Text>
       </View>
-      <Text style={styles.hash} numberOfLines={1}>哈希 {block.hash}</Text>
-      <Text style={styles.hash}>矿工 {block.miner}</Text>
-      <Text style={styles.hash}>时间 {fmtTime(block.timestamp)}</Text>
+      <Text style={styles.hash} numberOfLines={1}>{t('hash', '哈希')} {block.hash}</Text>
+      <Text style={styles.hash}>{t('miner', '矿工')} {block.miner}</Text>
+      <Text style={styles.hash}>{t('time', '时间')} {fmtTime(block.timestamp, fmtLocale)}</Text>
     </View>
   );
 }

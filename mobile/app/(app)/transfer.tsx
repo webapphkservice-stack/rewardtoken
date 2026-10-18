@@ -9,6 +9,7 @@ import { Button, Spacer } from '../../src/components/Button';
 import { Field } from '../../src/components/Field';
 import { useWalletInfo } from '../../src/hooks/data';
 import { useWalletAddress } from '../../src/hooks/walletStore';
+import { useLanguage } from '../../src/i18n/LanguageContext';
 import { colors, fonts, radius, spacing, typography } from '../../src/theme/theme';
 
 export default function TransferScreen() {
@@ -16,6 +17,7 @@ export default function TransferScreen() {
   const [mode, setMode] = useState<'send' | 'receive'>('send');
   const { walletAddress } = useWalletAddress();
   const { data } = useWalletInfo(walletAddress, !!walletAddress);
+  const { t } = useLanguage();
 
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState('');
@@ -24,11 +26,11 @@ export default function TransferScreen() {
 
   const onSend = async () => {
     if (!walletAddress) {
-      Alert.alert('提示', '请先在钱包页创建钱包');
+      Alert.alert(t('demo', '提示'), t('please_create_wallet_first', '请先在钱包页创建钱包'));
       return;
     }
     if (!to.trim() || !amount || !password) {
-      Alert.alert('提示', '请输入收款地址、金额和密码');
+      Alert.alert(t('demo', '提示'), t('enter_all_fields', '请输入收款地址、金额和密码'));
       return;
     }
     setSubmitting(true);
@@ -37,13 +39,17 @@ export default function TransferScreen() {
         method: 'POST',
         body: { action: 'send', from: walletAddress, to: to.trim(), amount, password },
       });
-      if (!res.success) throw new Error(res.message || '转账失败');
-      Alert.alert('转账成功', `交易哈希：\n${res.data?.tx_hash}`, [{ text: '好的' }]);
+      if (!res.success) throw new Error(res.message || t('transfer_failed', '转账失败'));
+      Alert.alert(
+        t('send_success', '转账成功'),
+        `${t('tx_hash_label', '交易哈希：')}\n${res.data?.tx_hash}`,
+        [{ text: t('i_know', '好的') }]
+      );
       setTo('');
       setAmount('');
       setPassword('');
     } catch (e) {
-      Alert.alert('转账失败', errMessage(e));
+      Alert.alert(t('transfer_failed', '转账失败'), errMessage(e));
     } finally {
       setSubmitting(false);
     }
@@ -55,29 +61,47 @@ export default function TransferScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.tabs}>
-            <Tab label="发送" active={mode === 'send'} onPress={() => setMode('send')} />
-            <Tab label="接收" active={mode === 'receive'} onPress={() => setMode('receive')} />
+            <Tab label={t('send', '发送')} active={mode === 'send'} onPress={() => setMode('send')} />
+            <Tab label={t('receive', '接收')} active={mode === 'receive'} onPress={() => setMode('receive')} />
           </View>
 
           {mode === 'receive' ? (
             <View style={styles.receiveBox}>
-              <Text style={styles.receiveLabel}>您的收款地址</Text>
+              <Text style={styles.receiveLabel}>{t('your_address', '您的收款地址')}</Text>
               <Text style={styles.receiveAddr} selectable numberOfLines={6}>
-                {walletAddress ?? '请先在钱包页创建钱包'}
+                {walletAddress ?? t('please_create_wallet_first', '请先在钱包页创建钱包')}
               </Text>
-              <Text style={styles.receiveHint}>把该地址发给对方，对方选择发送并填入即可转给您。</Text>
+              <Text style={styles.receiveHint}>{t('receive_hint', '把该地址发给对方，对方选择发送并填入即可转给您。')}</Text>
             </View>
           ) : (
             <>
               <View style={styles.balanceBox}>
-                <Text style={styles.balanceLabel}>当前余额</Text>
+                <Text style={styles.balanceLabel}>{t('available_balance', '当前余额')}</Text>
                 <Text style={styles.balanceValue}>{data?.balance ?? '—'}</Text>
               </View>
-              <Field label="收款地址" value={to} onChangeText={setTo} placeholder="0x…" autoCapitalize="none" />
-              <Field label="金额" value={amount} onChangeText={setAmount} placeholder="转入净额" keyboardType="number-pad" />
-              <Field label="交易密码" value={password} onChangeText={setPassword} placeholder="注册时设置的密码" secureTextEntry />
+              <Field
+                label={t('recipient_address', '收款地址')}
+                value={to}
+                onChangeText={setTo}
+                placeholder="0x…"
+                autoCapitalize="none"
+              />
+              <Field
+                label={t('amount', '金额')}
+                value={amount}
+                onChangeText={setAmount}
+                placeholder={t('amount_hint', '转入净额')}
+                keyboardType="number-pad"
+              />
+              <Field
+                label={t('transaction_password', '交易密码')}
+                value={password}
+                onChangeText={setPassword}
+                placeholder={t('transaction_password_hint', '注册时设置的密码')}
+                secureTextEntry
+              />
               <Spacer h={spacing.md} />
-              <Button title="发送" onPress={onSend} loading={submitting} />
+              <Button title={t('send', '发送')} onPress={onSend} loading={submitting} />
             </>
           )}
         </ScrollView>

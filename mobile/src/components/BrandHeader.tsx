@@ -6,7 +6,7 @@ export function BrandHeader({ right }: { right?: React.ReactNode }) {
   return (
     <View style={styles.brandRow}>
       <View>
-        <Text style={styles.brandName}>邀请奖励代币</Text>
+        <Text style={styles.brandName}>Invite Reward Token</Text>
         <View style={styles.brandBar} />
       </View>
       {right ? <View>{right}</View> : null}

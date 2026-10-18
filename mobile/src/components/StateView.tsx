@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme/theme';
 
-export function Loader({ text = '加载中…' }: { text?: string }) {
+export function Loader({ text = 'Loading…' }: { text?: string }) {
   return (
     <View style={styles.wrap}>
       <ActivityIndicator size="large" color={colors.primary} />
@@ -11,7 +11,7 @@ export function Loader({ text = '加载中…' }: { text?: string }) {
   );
 }
 
-export function Empty({ text = '暂无信息', hint }: { text?: string; hint?: string }) {
+export function Empty({ text = 'No data', hint }: { text?: string; hint?: string }) {
   return (
     <View style={styles.wrap}>
       <View style={styles.bar} />

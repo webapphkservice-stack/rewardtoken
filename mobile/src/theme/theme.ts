@@ -5,9 +5,9 @@ import { Platform, StyleSheet } from 'react-native';
  */
 export const colors = {
   // Editorial 品牌
-  primary: '#f56a6a', // 主红
-  primaryDark: '#e64c4c', // 深红
-  primarySoft: '#fdeeee', // 浅红背景
+  primary: '#c6a348', // 主金 rgb(198, 163, 72)
+  primaryDark: '#ac8e3f', // 深金
+  primarySoft: '#faf5e9', // 浅金背景
 
   text: '#33343a', // 标题
   body: '#5d665a', // 正文灰绿

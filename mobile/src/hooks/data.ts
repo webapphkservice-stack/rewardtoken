@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { translate } from '../i18n/LanguageContext';
 import { apiFetch, errMessage } from '../api/apiFetch';
 import type {
   BlockListData,
@@ -39,19 +40,16 @@ function useLoad<T>(fetcher: () => Promise<T>, refreshKey: unknown[]): GalleryLi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, refreshKey);
 
+  // 保持 refresh 引用稳定，供 useFocusEffect 等场景安全依赖
+  const loadRef = useRef(load);
+  useEffect(() => {
+    loadRef.current = load;
+  });
+
   const refresh = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetcher();
-      setData(res);
-    } catch (e) {
-      setError(errMessage(e));
-    } finally {
-      setLoading(false);
-    }
+    await loadRef.current();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetcher, ...refreshKey]);
+  }, []);
 
   return { data, loading, error, refresh };
 }
@@ -59,18 +57,18 @@ function useLoad<T>(fetcher: () => Promise<T>, refreshKey: unknown[]): GalleryLi
 export function useStatus(): GalleryLike<StatusData> {
   return useLoad(async () => {
     const res = await apiFetch<StatusData>('/api/status');
-    if (!res.success) throw new Error(res.message || '加载失败');
+    if (!res.success) throw new Error(res.message || translate('load_failed', '加载失败'));
     return res;
   }, []);
 }
 
 export function useWalletInfo(address: string | null, enabled: boolean): GalleryLike<WalletInfo> {
   return useLoad(async () => {
-    if (!address) throw new Error('无钱包地址');
+    if (!address) throw new Error(translate('no_wallet_address', '无钱包地址'));
     const res = await apiFetch<{ success: boolean; message?: string; data?: WalletInfo }>(
       `/api/geth-wallet?action=info&address=${encodeURIComponent(address)}`
     );
-    if (!res.success) throw new Error(res.message || '加载失败');
+    if (!res.success) throw new Error(res.message || translate('load_failed', '加载失败'));
     return res.data ?? ({} as WalletInfo);
   }, [address, enabled]);
 }
@@ -81,7 +79,7 @@ export function useRewards(address: string | null): GalleryLike<RewardItem[]> {
     const res = await apiFetch<{ success: boolean; message?: string; data?: RewardItem[] }>(
       `/api/rewards${query}`
     );
-    if (!res.success) throw new Error(res.message || '加载失败');
+    if (!res.success) throw new Error(res.message || translate('load_failed', '加载失败'));
     return res.data ?? [];
   }, [address]);
 }
@@ -103,7 +101,7 @@ export function useBlocks(limit = 10): {
     const res = await apiFetch<{ success: boolean; message?: string; data?: BlockListData }>(
       `/api/block?action=list&offset=${offset}&limit=${limit}`
     );
-    if (!res.success) throw new Error(res.message || '加载失败');
+    if (!res.success) throw new Error(res.message || translate('load_failed', '加载失败'));
     return res.data ?? { latest: null, offset, count: 0, has_more: false, blocks: [] };
   }, [limit]);
 
@@ -150,11 +148,11 @@ export function useBlocks(limit = 10): {
 
 export function useTxs(address: string | null): GalleryLike<TxRecord[]> {
   return useLoad(async () => {
-    if (!address) throw new Error('无钱包地址');
+    if (!address) throw new Error(translate('no_wallet_address', '无钱包地址'));
     const res = await apiFetch<{ success: boolean; message?: string; data?: TxRecord[] }>(
       `/api/geth-wallet?action=txs&address=${encodeURIComponent(address)}`
     );
-    if (!res.success) throw new Error(res.message || '加载失败');
+    if (!res.success) throw new Error(res.message || translate('load_failed', '加载失败'));
     return res.data ?? [];
   }, [address]);
 }

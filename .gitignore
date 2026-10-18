@@ -23,5 +23,6 @@ laravel13/storage/framework/cache/data/
 
 # React Native / Metro
 mobile/.bundle/
+mobile/.expo/
 mobile/android/build/
 mobile/ios/Pods/
