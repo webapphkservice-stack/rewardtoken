@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SESSION_KEY = 'irt_session_cookie';
+/** Laravel session cookie 名，取自 config/session.php 的 'driver' 相关前缀 */
+const SESSION_COOKIE_NAME = 'laravel-session';
 
 /**
  * Session cookie 管理：后端基于 Laravel session（driver=database），
@@ -44,14 +46,25 @@ export async function buildCookieHeader(): Promise<string | null> {
   return `${cookie.name}=${cookie.value}`;
 }
 
-/** 从单条 Set-Cookie 头中提取 laravel_session=... */
+/**
+ * 从 HTTP 响应的 Set-Cookie 头中提取 laravel-session=...
+ * 注意 Laravel 同时下发 XSRF-TOKEN，我们只关心真正的 session cookie。
+ * Set-Cookie 可能包含多个 cookie（逗号分隔的 header 或 raw headers 里多条 Set-Cookie）。
+ */
 function parseSetCookie(header: string): SessionCookie | null {
-  // Laravel 返回 "laravel_session=xxxx; path=/; httponly; samesite=lax"
-  const firstSegment = header.split(';')[0] ?? '';
-  const eq = firstSegment.indexOf('=');
-  if (eq <= 0) return null;
-  const name = firstSegment.slice(0, eq).trim();
-  const value = firstSegment.slice(eq + 1).trim();
-  if (!name || !value) return null;
-  return { name, value };
+  if (!header) return null;
+  // header 可能包含多条 Set-Cookie（逗号分隔），逐一解析找 laravel-session
+  const segments = header.split(',');
+  for (const seg of segments) {
+    const firstSegment = seg.split(';')[0] ?? '';
+    const eq = firstSegment.indexOf('=');
+    if (eq <= 0) continue;
+    const name = firstSegment.slice(0, eq).trim();
+    const value = firstSegment.slice(eq + 1).trim();
+    if (name === SESSION_COOKIE_NAME && name && value) {
+      return { name, value };
+    }
+  }
+  // 兜底：没找到 laravel-session 就返回 null，避免存错 XSRF-TOKEN
+  return null;
 }

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { translate } from '../i18n/LanguageContext';
 import { apiFetch, setSessionExpiredHandler } from '../api/apiFetch';
 import { clearSessionCookie, getSessionCookie } from '../api/session';
 
@@ -43,26 +44,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           AsyncStorage.getItem(USERNAME_KEY),
           getSessionCookie(),
         ]);
+
         if (a) setAddress(a);
         if (u) setUsername(u);
 
         if (cookie) {
           try {
-            const res = await apiFetch<{ logged_in: boolean; address?: string; username?: string }>(
-              '/auth/status',
-              { timeout: 10000 }
-            );
+            // 后端返回 { success: true, data: { logged_in, address, username } }
+            // 需要解包 .data 拿到真实的 { logged_in } 对象
+            const rawRes = await apiFetch<{
+              success?: boolean;
+              data?: { logged_in?: boolean; address?: string; username?: string };
+              logged_in?: boolean;
+            }>('/auth/status', { timeout: 10000 });
+            const res: { logged_in: boolean; address?: string; username?: string } =
+              (rawRes.data ?? rawRes) as any;
             if (res.logged_in && res.address) {
               await persistLogin(res.address, res.username ?? u);
             } else {
+              // session 已失效：清 cookie 和本地登录态，保持冷启动干净
               await persistLogin(null, null);
+              await clearSessionCookie();
             }
           } catch {
-            // 后端不可达时保留本地登录态，不强制登出
+            // 后端不可达或其他异常 → 保留本地登录态，不强制登出
           }
         }
       } catch {
-        // 忽略恢复错误
+        // 忽略顶层恢复异常
       } finally {
         setLoading(false);
       }
@@ -81,12 +90,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(async (uname: string, password: string) => {
-    const res = await apiFetch<{ address: string; username: string }>('/auth/login', {
+    // 后端返回 {success, message, data:{address, username}}，需解包 data
+    const res = await apiFetch<{
+      data?: { address: string; username: string };
+      address?: string;
+      username?: string;
+    }>('/auth/login', {
       method: 'POST',
       body: { username: uname, password },
       skipAuth: true,
     });
-    await persistLogin(res.address, res.username);
+    const d = res.data ?? res;
+    if (!d?.address) {
+      throw new Error(translate('login_response_missing_address', '登录响应缺少账户地址'));
+    }
+    await persistLogin(d.address, d.username ?? uname);
   }, [persistLogin]);
 
   const logout = useCallback(async () => {

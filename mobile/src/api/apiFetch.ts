@@ -1,3 +1,4 @@
+import { translate } from '../i18n/LanguageContext';
 import { apiBaseURL } from './client';
 import { buildCookieHeader, saveSessionCookie } from './session';
 
@@ -58,14 +59,23 @@ export async function apiFetch<T = unknown>(
     });
   } catch (e) {
     clearTimeout(timer);
-    throw new ApiRequestError(0, '网络异常，请检查网络或后端服务是否可用');
+    throw new ApiRequestError(0, translate('network_error', '网络异常，请检查网络或后端服务是否可用'));
   }
   clearTimeout(timer);
 
   // 会话 cookie 回写（登录时后端下发 Set-Cookie）
-  const setCookie = raw.headers.get('set-cookie') ?? '';
-  if (setCookie) {
-    await saveSessionCookie(setCookie);
+  // 注意 React Native fetch 的 headers.get('set-cookie') 可能只返回第一条，
+  // 用 forEach 拿所有 set-cookie，其中可能同时有 XSRF-TOKEN 和 laravel-session
+  const allSetCookies: string[] = [];
+  raw.headers.forEach((value, key) => {
+    if (key.toLowerCase() === 'set-cookie') allSetCookies.push(value);
+  });
+  if (allSetCookies.length > 0) {
+    // 逐条尝试，parseSetCookie 现在只匹配 laravel-session 名
+    for (const sc of allSetCookies) {
+      const saved = await saveSessionCookie(sc);
+      if (saved) break; // 存到真正的 session cookie 就停
+    }
   }
 
   const text = await raw.text();
@@ -84,7 +94,7 @@ export async function apiFetch<T = unknown>(
 
   // 后端业务失败：success === false
   if (json && json.success === false) {
-    const msg = (json.message as string) || '请求失败';
+    const msg = (json.message as string) || translate('request_failed', '请求失败');
     if (raw.status === 401 && !skipAuth) {
       onSessionExpired?.();
     }
@@ -92,7 +102,7 @@ export async function apiFetch<T = unknown>(
   }
 
   if (!raw.ok) {
-    throw new ApiRequestError(raw.status, '请求失败');
+    throw new ApiRequestError(raw.status, translate('request_failed', '请求失败'));
   }
 
   return (json ?? {}) as T;
