@@ -423,11 +423,15 @@ class GethWalletController extends Controller
         if (!$result || $result === '0x') {
             return null;
         }
-        $hex = ltrim($result, '0x');
-        if (strlen($hex) < 64) {
+        $hex = str_starts_with($result, '0x') ? substr($result, 2) : $result;
+        if (strlen($hex) < 40) {
             return null;
         }
         $addr = '0x' . strtolower(substr($hex, -40));
+        // 零地址视为未配置
+        if ($addr === '0x' . str_repeat('0', 40)) {
+            return null;
+        }
         return $addr;
     }
 
