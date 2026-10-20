@@ -65,6 +65,22 @@ export default function HomeScreen() {
               </View>
             </View>
 
+            <SectionHeading title={t('contract_info', '合约信息')} />
+            <View style={[styles.blockCard, styles.spacedCard]}>
+              <View style={styles.blockLine}>
+                <Text style={styles.blockLabel}>{t('contract_address', '合约地址')}</Text>
+                <Text style={[styles.blockValue, styles.hash]} numberOfLines={1}>
+                  {data.contract_address ?? '—'}
+                </Text>
+              </View>
+              <View style={styles.blockLine}>
+                <Text style={styles.blockLabel}>{t('initial_account', '初始账号')}</Text>
+                <Text style={[styles.blockValue, styles.hash]} numberOfLines={1}>
+                  {data.admin ?? '—'}
+                </Text>
+              </View>
+            </View>
+
             <SectionHeading title={t('reward_ratio', '推荐奖励比例')} />
             <View style={styles.levelRow}>
               {Array.isArray(data.referral_levels)
@@ -150,6 +166,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.md,
   },
+  spacedCard: { marginBottom: spacing.lg },
   blockLine: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
   blockLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
   blockValue: { fontFamily: fonts.bodySemi, fontSize: 13, color: colors.text },
