@@ -20,6 +20,10 @@ return [
     'wallet_registration' => 'Wallet Registration',
     'reward_info' => 'Reward Info',
     'admin_panel' => 'Admin Panel',
+    'admin_login' => 'Admin Login',
+    'password' => 'Password',
+    'login_failed' => 'Invalid username or password',
+    'do_login' => 'Sign In',
     'back_to_frontend' => 'Back to Frontend',
 
     'contract_info' => 'Contract Info',

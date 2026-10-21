@@ -26,9 +26,22 @@ Route::get('/status', [StatusController::class, 'index']);
 Route::get('/rewards', [RewardsController::class, 'index']);
 Route::get('/wallets', [WalletsController::class, 'index']);
 Route::get('/abi', [AbiController::class, 'index']);
-Route::match(['get', 'post'], '/site-settings', [SiteSettingsController::class, 'index']);
-Route::post('/deploy', [DeployController::class, 'index']);
-Route::post('/settings', [SettingsController::class, 'index']);
-Route::match(['get', 'post'], '/node', [NodeController::class, 'index']);
 Route::match(['get', 'post'], '/geth-wallet', [GethWalletController::class, 'index']);
-Route::post('/run-test', [RunTestController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| 管理端 API（需管理员登录态，未登录返回 401 JSON）
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware([
+    \Illuminate\Cookie\Middleware\EncryptCookies::class,
+    \Illuminate\Session\Middleware\StartSession::class,
+    'admin',
+])->group(function () {
+    Route::match(['get', 'post'], '/site-settings', [SiteSettingsController::class, 'index']);
+    Route::post('/deploy', [DeployController::class, 'index']);
+    Route::post('/settings', [SettingsController::class, 'index']);
+    Route::match(['get', 'post'], '/node', [NodeController::class, 'index']);
+    Route::post('/run-test', [RunTestController::class, 'index']);
+});

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeployController as AdminDeployController;
 use App\Http\Controllers\Admin\NodeController as AdminNodeController;
@@ -71,9 +72,17 @@ Route::post('/api/orders', [OrdersController::class, 'index']);
 */
 
 Route::prefix('admin')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/deploy', [AdminDeployController::class, 'index'])->name('admin.deploy');
-    Route::get('/settings', [AdminSettingsController::class, 'index'])->name('admin.settings');
-    Route::get('/rewards', [AdminRewardsController::class, 'index'])->name('admin.rewards');
-    Route::get('/node', [AdminNodeController::class, 'index'])->name('admin.node');
+    // 登录 / 退出（无需登录态）
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.post');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+    // 后台页面（需管理员登录）
+    Route::middleware('admin')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/deploy', [AdminDeployController::class, 'index'])->name('admin.deploy');
+        Route::get('/settings', [AdminSettingsController::class, 'index'])->name('admin.settings');
+        Route::get('/rewards', [AdminRewardsController::class, 'index'])->name('admin.rewards');
+        Route::get('/node', [AdminNodeController::class, 'index'])->name('admin.node');
+    });
 });

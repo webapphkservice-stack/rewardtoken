@@ -27,6 +27,12 @@
         <a href="/">
             <span class="icon">←</span> <?= t('back_to_frontend') ?>
         </a>
+        <form method="POST" action="/admin/logout" style="margin:0;">
+            @csrf
+            <button type="submit" class="sidebar-logout-btn">
+                <span class="icon">⏻</span> <?= t('logout') ?>
+            </button>
+        </form>
     </nav>
     <div class="sidebar-lang">
         <select class="lang-select" onchange="changeLanguage(this.value)">
@@ -58,5 +64,30 @@
         font-size: 0.9rem;
         color: #4a5568;
         cursor: pointer;
+    }
+    .sidebar-logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        text-align: left;
+        color: #c53030;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .sidebar-logout-btn:hover {
+        background: #fff5f5;
+    }
+    .sidebar-logout-btn .icon {
+        font-size: 1.1rem;
+        width: 24px;
+        text-align: center;
     }
 </style>

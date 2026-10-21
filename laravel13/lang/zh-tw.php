@@ -20,6 +20,10 @@ return [
     'wallet_registration' => '錢包註冊',
     'reward_info' => '獎勵資訊',
     'admin_panel' => '管理後台',
+    'admin_login' => '管理員登入',
+    'password' => '密碼',
+    'login_failed' => '用戶名或密碼錯誤',
+    'do_login' => '登入',
     'back_to_frontend' => '返回前台',
 
     'contract_info' => '合約資訊',

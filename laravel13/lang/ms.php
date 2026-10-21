@@ -20,6 +20,10 @@ return [
     'wallet_registration' => 'Pendaftaran Dompet',
     'reward_info' => 'Maklumat Ganjaran',
     'admin_panel' => 'Panel Pentadbir',
+    'admin_login' => 'Log Masuk Pentadbir',
+    'password' => 'Kata Laluan',
+    'login_failed' => 'Nama pengguna atau kata laluan tidak sah',
+    'do_login' => 'Log Masuk',
     'back_to_frontend' => 'Kembali ke Halaman Depan',
 
     'contract_info' => 'Maklumat Kontrak',

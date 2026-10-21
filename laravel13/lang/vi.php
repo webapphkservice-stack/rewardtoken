@@ -20,6 +20,10 @@ return [
     'wallet_registration' => 'Đăng ký Ví',
     'reward_info' => 'Thông tin Thưởng',
     'admin_panel' => 'Bảng quản trị',
+    'admin_login' => 'Đăng nhập quản trị',
+    'password' => 'Mật khẩu',
+    'login_failed' => 'Tên đăng nhập hoặc mật khẩu không đúng',
+    'do_login' => 'Đăng nhập',
     'back_to_frontend' => 'Quay lại Trang ngườI dùng',
 
     'contract_info' => 'Thông tin Hợp đồng',

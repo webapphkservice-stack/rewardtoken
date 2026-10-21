@@ -20,6 +20,10 @@ return [
     'wallet_registration' => 'ウォレット登録',
     'reward_info' => '報酬情報',
     'admin_panel' => '管理画面',
+    'admin_login' => '管理者ログイン',
+    'password' => 'パスワード',
+    'login_failed' => 'ユーザー名またはパスワードが正しくありません',
+    'do_login' => 'ログイン',
     'back_to_frontend' => 'フロントに戻る',
 
     'contract_info' => 'コントラクト情報',

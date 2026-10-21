@@ -20,6 +20,10 @@ return [
     'wallet_registration' => 'ลงทะเบียนกระเป๋าเงิน',
     'reward_info' => 'ข้อมูลรางวัล',
     'admin_panel' => 'แผงผู้ดูแลระบบ',
+    'admin_login' => 'เข้าสู่ระบบผู้ดูแลระบบ',
+    'password' => 'รหัสผ่าน',
+    'login_failed' => 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+    'do_login' => 'เข้าสู่ระบบ',
     'back_to_frontend' => 'กลับสู่หน้าบ้าน',
 
     'contract_info' => 'ข้อมูลสัญญา',

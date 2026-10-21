@@ -20,6 +20,10 @@ return [
     'wallet_registration' => '지갑 등록',
     'reward_info' => '보상 정보',
     'admin_panel' => '관리자 패널',
+    'admin_login' => '관리자 로그인',
+    'password' => '비밀번호',
+    'login_failed' => '사용자 이름 또는 비밀번호가 올바르지 않습니다',
+    'do_login' => '로그인',
     'back_to_frontend' => '프론트로 돌아가기',
 
     'contract_info' => '컨트랙트 정보',
