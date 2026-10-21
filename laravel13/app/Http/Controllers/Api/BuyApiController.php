@@ -14,6 +14,22 @@ class BuyApiController extends Controller
     private const GMPAY_SECRET = 'gms_SfFSwCa7kQl-RtSPcmacF6Zy114YFDDEcB_1M7fbHio';
     private const GMPAY_BASE_URL = 'http://localhost:3000';
 
+    /**
+     * 调用网关时附带公网 Host/X-Forwarded-Proto 头，
+     * 使网关生成的 checkoutUrl（payment_url）指向公开域名而非 localhost。
+     * 由 .env 的 GMPAY_PUBLIC_HOST 控制；本地开发不配置则维持原行为。
+     */
+    private function gmpayHeaders(bool $withContentType = true): array
+    {
+        $headers = $withContentType ? ['Content-Type: application/json'] : [];
+        $publicHost = env('GMPAY_PUBLIC_HOST');
+        if ($publicHost) {
+            $headers[] = 'Host: ' . $publicHost;
+            $headers[] = 'X-Forwarded-Proto: ' . (str_starts_with((string) config('app.url'), 'https') ? 'https' : 'http');
+        }
+        return $headers;
+    }
+
     // Dev funder for gas
     private const DEV_FUNDER = '0x71562b71999873db5b286df957af199ec94617f7';
 
@@ -66,7 +82,7 @@ class BuyApiController extends Controller
             curl_setopt_array($ch, [
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => json_encode($payload),
-                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                CURLOPT_HTTPHEADER => $this->gmpayHeaders(),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_TIMEOUT => 15,
                 CURLOPT_CONNECTTIMEOUT => 5,
@@ -150,6 +166,7 @@ class BuyApiController extends Controller
             $ch = curl_init($queryUrl);
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER => $this->gmpayHeaders(false),
                 CURLOPT_TIMEOUT => 10,
                 CURLOPT_CONNECTTIMEOUT => 5,
             ]);
