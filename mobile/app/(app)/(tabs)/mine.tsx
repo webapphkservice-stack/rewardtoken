@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Constants from 'expo-constants';
 import { BrandHeader } from '../../../src/components/BrandHeader';
 import { SectionHeading } from '../../../src/components/Cond';
 import { useAuth } from '../../../src/context/auth';
@@ -63,6 +64,23 @@ export default function MineScreen() {
           <Text style={styles.rowLabel}>{t('select_language', '选择语言')}</Text>
           <Text style={styles.rowValue}>{currentNative} ›</Text>
         </Pressable>
+
+        {/* 法律文档 — 所有用户可见 */}
+        {(() => {
+          const base = Constants.expoConfig?.extra?.apiBaseUrl ?? 'https://token.daliao.ai';
+          return (
+            <>
+              <Pressable style={styles.row} onPress={() => Linking.openURL(`${base}/terms`)}>
+                <Text style={styles.rowLabel}>{t('terms_of_service', '服务条款')}</Text>
+                <Text style={styles.arrow}>›</Text>
+              </Pressable>
+              <Pressable style={styles.row} onPress={() => Linking.openURL(`${base}/privacy`)}>
+                <Text style={styles.rowLabel}>{t('privacy_policy', '隐私政策')}</Text>
+                <Text style={styles.arrow}>›</Text>
+              </Pressable>
+            </>
+          );
+        })()}
 
         {isAuthed ? (
           <Pressable

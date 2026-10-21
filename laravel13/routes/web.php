@@ -35,6 +35,8 @@ Route::get('/transfer', [TransferController::class, 'index'])->name('transfer');
 Route::get('/block', [BlockController::class, 'index'])->name('block');
 Route::get('/my', [MyController::class, 'index'])->name('my');
 Route::get('/buy', [BuyController::class, 'index'])->name('buy');
+Route::get('/terms', function () { return view('terms'); })->name('terms');
+Route::get('/privacy', function () { return view('privacy'); })->name('privacy');
 
 /*
 |--------------------------------------------------------------------------
