@@ -9,8 +9,7 @@ class NodeController extends Controller
 {
     /**
      * geth 启动参数模板（%s = --datadir 路径，指向 storage/geth，账本随项目迁移）
-     * geth 1.17 已移除 --mine/--allow-insecure-unlock/--rpc.enabledeprecatedpersonal：
-     * dev 模式默认 auto-mine 且账户自动解锁
+     * 仅用于无 systemd 的环境（本地开发）手动拉起；生产由 geth.service 管理
      */
     private const GETH_ARGS = '--dev --datadir "%s" --http --http.api eth,net,admin --http.port 8545 --http.addr 0.0.0.0';
 
@@ -60,18 +59,7 @@ class NodeController extends Controller
                         return response()->json(['success' => false, 'message' => t('geth_already_running')]);
                     }
 
-                    $cmd = $this->gethCommand() . ' > ' . $this->gethLog() . ' 2>&1 &';
-                    shell_exec($cmd);
-
-                    // 等待启动
-                    for ($i = 0; $i < 10; $i++) {
-                        sleep(1);
-                        if ($this->isGethRunning()) {
-                            break;
-                        }
-                    }
-
-                    if ($this->isGethRunning()) {
+                    if ($this->startGeth()) {
                         return response()->json([
                             'success' => true,
                             'message' => t('geth_started'),
@@ -85,29 +73,15 @@ class NodeController extends Controller
                         return response()->json(['success' => false, 'message' => t('geth_not_running')]);
                     }
 
-                    exec('pkill -f "geth --dev"', $output, $returnCode);
-                    sleep(2);
-
-                    if (!$this->isGethRunning()) {
+                    if ($this->stopGeth()) {
                         return response()->json(['success' => true, 'message' => t('geth_stopped')]);
                     }
                     return response()->json(['success' => false, 'message' => t('geth_stop_failed')]);
 
                 case 'restart':
-                    exec('pkill -f "geth --dev"', $output, $returnCode);
-                    sleep(2);
+                    $this->stopGeth();
 
-                    $cmd = $this->gethCommand() . ' > ' . $this->gethLog() . ' 2>&1 &';
-                    shell_exec($cmd);
-
-                    for ($i = 0; $i < 10; $i++) {
-                        sleep(1);
-                        if ($this->isGethRunning()) {
-                            break;
-                        }
-                    }
-
-                    if ($this->isGethRunning()) {
+                    if ($this->startGeth()) {
                         return response()->json([
                             'success' => true,
                             'message' => t('geth_restarted'),
@@ -133,15 +107,63 @@ class NodeController extends Controller
         }
     }
 
+    /**
+     * 进程检测：按可执行文件名精确匹配（pgrep -x）。
+     * 旧实现 pgrep -f "geth --dev" 依赖启动参数顺序，生产 systemd
+     * 命令行为 "geth --datadir ... --dev"，无法匹配导致状态误报。
+     */
     private function isGethRunning(): bool
     {
-        exec('pgrep -f "geth --dev"', $output, $returnCode);
+        exec('pgrep -x geth', $output);
         return !empty($output);
     }
 
     private function getGethPid(): ?string
     {
-        exec('pgrep -f "geth --dev"', $output, $returnCode);
+        exec('pgrep -x geth', $output);
         return $output[0] ?? null;
+    }
+
+    /**
+     * 是否存在 geth 的 systemd 单元（生产环境由 geth.service 托管）
+     */
+    private function hasSystemdUnit(): bool
+    {
+        exec('systemctl cat geth >/dev/null 2>&1', $output, $returnCode);
+        return $returnCode === 0;
+    }
+
+    private function startGeth(): bool
+    {
+        if ($this->hasSystemdUnit()) {
+            exec('sudo -n systemctl start geth 2>&1', $out, $rc);
+            if ($rc !== 0) {
+                return false;
+            }
+        } else {
+            $cmd = $this->gethCommand() . ' > ' . $this->gethLog() . ' 2>&1 &';
+            shell_exec($cmd);
+        }
+
+        for ($i = 0; $i < 10; $i++) {
+            sleep(1);
+            if ($this->isGethRunning()) {
+                return true;
+            }
+        }
+
+        return $this->isGethRunning();
+    }
+
+    private function stopGeth(): bool
+    {
+        if ($this->hasSystemdUnit()) {
+            exec('sudo -n systemctl stop geth 2>&1');
+        } else {
+            exec('pkill -x geth');
+        }
+
+        sleep(2);
+        return !$this->isGethRunning();
     }
 }
