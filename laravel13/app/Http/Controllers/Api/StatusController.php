@@ -57,12 +57,39 @@ class StatusController extends Controller
             $latestBlock = $rpc->call('eth_getBlockByNumber', [$latestBlockNumber, false]);
             $blockInfo = [];
             if ($latestBlock) {
+                // 如果最新块没有交易（dev chain 空闲时会连续出空块），
+                // 往回找最近一个有交易的块，用它的 transactions / gasUsed 来显示
+                $txCount = isset($latestBlock['transactions']) ? count($latestBlock['transactions']) : 0;
+                $gasUsed = isset($latestBlock['gasUsed']) ? hexdec($latestBlock['gasUsed']) : 0;
+
+                if ($txCount === 0 && hexdec($latestBlockNumber) > 0) {
+                    // dev chain 空闲时会连续出很多空块，
+                    // 扫 2000 块找最近有交易的（轻量 RPC 约 0.5s），找不到就返回空块真实值
+                    $scanLimit = min(hexdec($latestBlockNumber), 2000);
+                    $foundBlockNum = null;
+                    for ($i = 1; $i <= $scanLimit; $i++) {
+                        $prevNum = '0x' . dechex(hexdec($latestBlockNumber) - $i);
+                        $txCountHex = $rpc->call('eth_getBlockTransactionCountByNumber', [$prevNum]);
+                        if ($txCountHex && hexdec($txCountHex) > 0) {
+                            $foundBlockNum = $prevNum;
+                            $txCount = hexdec($txCountHex);
+                            break;
+                        }
+                    }
+                    if ($foundBlockNum) {
+                        $txBlock = $rpc->call('eth_getBlockByNumber', [$foundBlockNum, false]);
+                        if ($txBlock) {
+                            $gasUsed = isset($txBlock['gasUsed']) ? hexdec($txBlock['gasUsed']) : 0;
+                        }
+                    }
+                }
+
                 $blockInfo = [
                     'number' => isset($latestBlock['number']) ? hexdec($latestBlock['number']) : null,
                     'hash' => $latestBlock['hash'] ?? null,
                     'timestamp' => isset($latestBlock['timestamp']) ? hexdec($latestBlock['timestamp']) : null,
-                    'transactions' => isset($latestBlock['transactions']) ? count($latestBlock['transactions']) : 0,
-                    'gas_used' => isset($latestBlock['gasUsed']) ? hexdec($latestBlock['gasUsed']) : 0,
+                    'transactions' => $txCount,
+                    'gas_used' => $gasUsed,
                     'gas_limit' => isset($latestBlock['gasLimit']) ? hexdec($latestBlock['gasLimit']) : 0,
                     'size' => isset($latestBlock['size']) ? hexdec($latestBlock['size']) : 0,
                     'miner' => $latestBlock['miner'] ?? null

@@ -73,7 +73,7 @@ function BlockCard({
     <View style={styles.card}>
       <View style={styles.cardTop}>
         <Text style={styles.number}>{t('block', '区块')} #{block.number}</Text>
-        <Text style={styles.hash}>{block.transactions} txs</Text>
+        <Text style={styles.hash}>{block.transactions ? `${block.transactions} txs` : '—'}</Text>
       </View>
       <Text style={styles.hash} numberOfLines={1}>{t('hash', '哈希')} {block.hash}</Text>
       <Text style={styles.hash}>{t('miner', '矿工')} {block.miner}</Text>

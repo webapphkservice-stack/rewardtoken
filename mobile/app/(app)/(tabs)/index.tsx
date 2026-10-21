@@ -85,11 +85,11 @@ export default function HomeScreen() {
               </View>
               <View style={styles.blockLine}>
                 <Text style={styles.blockLabel}>{t('transactions', '交易数')}</Text>
-                <Text style={styles.blockValue}>{data.block?.transactions}</Text>
+                <Text style={styles.blockValue}>{data.block?.transactions ? data.block?.transactions : '—'}</Text>
               </View>
               <View style={styles.blockLine}>
                 <Text style={styles.blockLabel}>{t('gas_used_label', 'Gas 使用')}</Text>
-                <Text style={styles.blockValue}>{data.block?.gas_used}</Text>
+                <Text style={styles.blockValue}>{data.block?.gas_used ? data.block?.gas_used?.toLocaleString() : '—'}</Text>
               </View>
               <View style={styles.blockLine}>
                 <Text style={styles.blockLabel}>{t('time', '时间')}</Text>
