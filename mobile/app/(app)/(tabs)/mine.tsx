@@ -55,24 +55,27 @@ export default function MineScreen() {
               <Text style={styles.rowLabel}>{t('my_orders', '我的订单')}</Text>
               <Text style={styles.arrow}>›</Text>
             </Pressable>
-            <Pressable
-              style={styles.row}
-              onPress={async () => {
-                await logout();
-                router.replace('/(app)/(tabs)/index');
-              }}
-            >
-              <Text style={[styles.rowLabel, { color: colors.danger }]}>{t('logout', '退出登录')}</Text>
-              <Text style={styles.arrow}>›</Text>
-            </Pressable>
           </>
         )}
 
         {/* 语言选择器 — 未登录也能改 */}
         <Pressable style={styles.row} onPress={() => setLangVisible(true)}>
-          <Text style={styles.rowLabel}>{t('language', '语言')}</Text>
+          <Text style={styles.rowLabel}>{t('select_language', '选择语言')}</Text>
           <Text style={styles.rowValue}>{currentNative} ›</Text>
         </Pressable>
+
+        {isAuthed ? (
+          <Pressable
+            style={styles.row}
+            onPress={async () => {
+              await logout();
+              router.replace('/(app)/(tabs)/index');
+            }}
+          >
+            <Text style={[styles.rowLabel, { color: colors.danger }]}>{t('logout', '退出登录')}</Text>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
 
       <Modal visible={langVisible} animationType="slide" transparent onRequestClose={() => setLangVisible(false)}>
