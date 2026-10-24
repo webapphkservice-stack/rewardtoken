@@ -8,9 +8,7 @@ class BuyController extends Controller
     {
         $config = getSiteConfig();
         return view('buy', [
-            'priceUsdt' => $config['token_purchase_price_usdt'] ?? 10,
-            'tokenAmount' => $config['token_purchase_amount'] ?? 1000,
-            'bonusAmount' => $config['token_purchase_bonus'] ?? 0,
+            'plans' => purchasePlans(),
             'symbol' => $config['symbol'] ?? 'IRT',
         ]);
     }

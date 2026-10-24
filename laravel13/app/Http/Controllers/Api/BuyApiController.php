@@ -42,15 +42,19 @@ class BuyApiController extends Controller
 
             $fromAddress = strtolower(trim((string) session('login_user', '')));
             $qty = (int) request()->post('qty', 0);
+            $planIndex = (int) request()->post('plan', 0);
 
             if (!$fromAddress || $qty < 1) {
                 throw new \Exception(t('missing_required_fields'));
             }
 
-            $config = getSiteConfig();
-            $priceUsdt = (float) ($config['token_purchase_price_usdt'] ?? 10);
-            $tokenAmount = (int) ($config['token_purchase_amount'] ?? 1000);
-            $bonusAmount = (int) ($config['token_purchase_bonus'] ?? 0);
+            $plans = purchasePlans();
+            if (!isset($plans[$planIndex])) {
+                $planIndex = 0;
+            }
+            $priceUsdt = $plans[$planIndex]['price_usdt'];
+            $tokenAmount = $plans[$planIndex]['token_amount'];
+            $bonusAmount = $plans[$planIndex]['bonus_amount'];
             $totalUsdt = $priceUsdt * $qty;
             $totalUsdtStr = number_format($totalUsdt, 2, '.', '');
 
@@ -110,6 +114,7 @@ class BuyApiController extends Controller
             $orders[$orderId] = [
                 'address' => $fromAddress,
                 'qty' => $qty,
+                'plan_index' => $planIndex,
                 'total_usdt' => $totalUsdtStr,
                 'token_amount' => $tokenAmount * $qty,
                 'bonus_amount' => $bonusAmount * $qty,

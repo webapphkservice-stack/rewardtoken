@@ -1,9 +1,7 @@
 @php
     $config = getSiteConfig();
     $langCode = currentLanguage();
-    $priceUsdt = $config['token_purchase_price_usdt'] ?? 10;
-    $tokenAmount = $config['token_purchase_amount'] ?? 1000;
-    $bonusAmount = $config['token_purchase_bonus'] ?? 0;
+    $plans = $plans ?? purchasePlans();
     $symbol = $config['symbol'] ?? 'IRT';
 @endphp
 <!DOCTYPE html>
@@ -37,26 +35,35 @@
             border-image: linear-gradient(90deg, #285793, transparent) 1;
             padding-bottom: 10px;
         }
-        .price-plan {
-            background: rgba(40,87,147,0.06);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
+        .plan-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
             margin-bottom: 20px;
         }
-        .price-plan .price-big {
-            font-size: 1.6rem;
+        .plan-card {
+            background: rgba(40,87,147,0.06);
+            border: 2px solid rgba(40,87,147,0.12);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
+        }
+        .plan-card:hover { transform: translateY(-2px); }
+        .plan-card.selected {
+            border-color: #285793;
+            background: rgba(40,87,147,0.10);
+            box-shadow: 0 4px 14px rgba(40,87,147,0.18);
+        }
+        .plan-card .price-big {
+            font-size: 1.4rem;
             font-weight: 700;
             color: #285793;
         }
-        .price-plan .price-desc {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 4px;
-        }
-        .price-plan .price-bonus {
+        .plan-card .price-desc {
             font-size: 0.85rem;
-            color: #e67e22;
+            color: #666;
             margin-top: 4px;
         }
         .form-group {
@@ -312,39 +319,38 @@
         <div class="buy-card">
             <h2><?= htmlspecialchars(t('token_purchase')) ?></h2>
 
-            <div class="price-plan">
-                <div class="price-big"><?= htmlspecialchars($priceUsdt) ?> USDT</div>
-                <div class="price-desc">
-                    = <?= htmlspecialchars(number_format($tokenAmount)) ?> <?= htmlspecialchars($symbol) ?>
-                    <?php if ($bonusAmount > 0): ?>
-                        + <?= t('bonus_gift', ['amount' => number_format($bonusAmount), 'symbol' => $symbol]) ?>
-                    <?php endif; ?>
-                </div>
-                <?php if ($bonusAmount > 0): ?>
-                    <div class="price-bonus">🎁 <?= t('bonus_gift', ['amount' => number_format($bonusAmount), 'symbol' => $symbol]) ?></div>
-                <?php endif; ?>
+            <div class="plan-list" id="planList">
+                <?php foreach ($plans as $i => $p): ?>
+                    <div class="plan-card<?= $i === 0 ? ' selected' : '' ?>" data-plan="<?= $i ?>" onclick="selectPlan(<?= $i ?>)">
+                        <div class="price-big"><?= htmlspecialchars(number_format($p['price_usdt'], 2)) ?> USDT</div>
+                        <div class="price-desc">
+                            = <?= htmlspecialchars(number_format($p['token_amount'])) ?> <?= htmlspecialchars($symbol) ?>
+                            <?php if ($p['bonus_amount'] > 0): ?>
+                                + <?= t('bonus_gift', ['amount' => number_format($p['bonus_amount']), 'symbol' => $symbol]) ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
 
             <div class="form-group">
                 <label><?= t('buy_amount') ?></label>
                 <input type="number" id="qtyInput" value="1" min="1" step="1">
-                <div class="hint"><?= t('token_purchase_amount_hint', ['price' => $priceUsdt]) ?></div>
+                <div class="hint" id="planHint"><?= t('token_purchase_amount_hint', ['price' => $plans[0]['price_usdt']]) ?></div>
             </div>
 
             <div class="total-display">
                 <div class="total-row">
                     <span class="total-label"><?= htmlspecialchars($symbol . ' ' . t('buy_amount')) ?></span>
-                    <span class="total-value" id="tokenTotal"><?= htmlspecialchars(number_format($tokenAmount)) ?> <?= htmlspecialchars($symbol) ?></span>
+                    <span class="total-value" id="tokenTotal"><?= htmlspecialchars(number_format($plans[0]['token_amount'])) ?> <?= htmlspecialchars($symbol) ?></span>
                 </div>
-                <?php if ($bonusAmount > 0): ?>
-                <div class="total-row">
+                <div class="total-row" id="bonusRow" style="<?= $plans[0]['bonus_amount'] > 0 ? '' : 'display:none;' ?>">
                     <span class="total-label">🎁 <?= t('bonus_gift', ['amount' => '', 'symbol' => '']) ?></span>
-                    <span class="total-value" id="bonusTotal" style="color:#e67e22;">+<?= htmlspecialchars(number_format($bonusAmount)) ?> <?= htmlspecialchars($symbol) ?></span>
+                    <span class="total-value" id="bonusTotal" style="color:#e67e22;">+<?= htmlspecialchars(number_format($plans[0]['bonus_amount'])) ?> <?= htmlspecialchars($symbol) ?></span>
                 </div>
-                <?php endif; ?>
                 <div class="total-row" style="border-top:1px solid rgba(40,87,147,0.15);padding-top:10px;margin-top:6px;">
                     <span class="total-label"><?= t('buy_total') ?></span>
-                    <span class="total-value" id="usdtTotal"><?= htmlspecialchars(number_format($priceUsdt, 2)) ?> USDT</span>
+                    <span class="total-value" id="usdtTotal"><?= htmlspecialchars(number_format($plans[0]['price_usdt'], 2)) ?> USDT</span>
                 </div>
             </div>
 
@@ -377,10 +383,10 @@
         </div>
     </div>
     <script>
-        const priceUsdt = <?= json_encode((float) $priceUsdt) ?>;
-        const tokenAmount = <?= json_encode((int) $tokenAmount) ?>;
-        const bonusAmount = <?= json_encode((int) $bonusAmount) ?>;
+        const plans = <?= json_encode($plans) ?>;
+        let planIndex = 0;
         const symbol = <?= json_encode($symbol) ?>;
+        const hintTpl = <?= json_encode(t('token_purchase_amount_hint', ['price' => '{price}'])) ?>;
         let currentPaymentUrl = '';
         let currentTradeId = '';
         let currentOrderId = '';
@@ -403,17 +409,37 @@
         const globalAlert = document.getElementById('globalAlert');
         const loginGateAlert = document.getElementById('loginGateAlert');
 
+        // 切换购买方案
+        function selectPlan(i) {
+            planIndex = i;
+            document.querySelectorAll('.plan-card').forEach(function (c) {
+                c.classList.toggle('selected', parseInt(c.dataset.plan) === i);
+            });
+            updateTotals();
+        }
+
+        function currentPlan() {
+            return plans[planIndex] || plans[0];
+        }
+
         // 更新总量显示
         function updateTotals() {
+            const p = currentPlan();
             const qty = parseInt(qtyInput.value) || 1;
-            const totalTokens = tokenAmount * qty;
-            const totalBonus = bonusAmount * qty;
-            const totalUsdt = (priceUsdt * qty).toFixed(2);
+            const totalTokens = p.token_amount * qty;
+            const totalBonus = p.bonus_amount * qty;
+            const totalUsdt = (p.price_usdt * qty).toFixed(2);
             tokenTotalEl.textContent = totalTokens.toLocaleString() + ' ' + symbol;
-            if (bonusTotalEl) {
+            const bonusRow = document.getElementById('bonusRow');
+            if (p.bonus_amount > 0) {
+                bonusRow.style.display = '';
                 bonusTotalEl.textContent = '+' + totalBonus.toLocaleString() + ' ' + symbol;
+            } else {
+                bonusRow.style.display = 'none';
             }
             usdtTotalEl.textContent = totalUsdt + ' USDT';
+            const hintEl = document.getElementById('planHint');
+            if (hintEl) hintEl.textContent = hintTpl.replace('{price}', p.price_usdt);
         }
 
         qtyInput.addEventListener('input', updateTotals);
@@ -459,6 +485,7 @@
                 // 下单地址由后端从登录 session 读取，无需前端传地址
                 const formData = new FormData();
                 formData.append('qty', qty.toString());
+                formData.append('plan', String(planIndex));
 
                 const resp = await fetch('/api/buy/create-order', {
                     method: 'POST',
@@ -491,7 +518,7 @@
             const qrPlaceholder = document.getElementById('qrcodePlaceholder');
             const urlLink = document.getElementById('paymentUrlLink');
 
-            const totalUsdt = (priceUsdt * qty).toFixed(2);
+            const totalUsdt = (currentPlan().price_usdt * qty).toFixed(2);
             orderInfo.textContent = qty + ' ' + buyAmountText + ' = ' + totalUsdt + ' USDT';
             urlLink.textContent = data.payment_url;
             urlLink.href = data.payment_url;

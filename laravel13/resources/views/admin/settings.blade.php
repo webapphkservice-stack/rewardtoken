@@ -251,33 +251,12 @@
             <h2><?= t('token_purchase_settings') ?></h2>
             <div id="purchaseAlert" class="alert"></div>
             <form id="purchaseForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><?= t('token_purchase_price_label') ?> (USDT)</label>
-                        <input type="number" name="token_purchase_price_usdt" value="<?= htmlspecialchars($config['token_purchase_price_usdt'] ?? 10) ?>" min="1" step="0.01" required>
-                        <p class="hint"><?= t('token_purchase_price_hint') ?></p>
-                    </div>
-                    <div class="form-group">
-                        <label><?= t('token_purchase_amount_label') ?> (<?= htmlspecialchars($config['symbol'] ?? 'IRT') ?>)</label>
-                        <input type="number" name="token_purchase_amount" value="<?= htmlspecialchars($config['token_purchase_amount'] ?? 1000) ?>" min="1" required>
-                        <p class="hint"><?= t('token_purchase_amount_hint', ['price' => htmlspecialchars($config['token_purchase_price_usdt'] ?? 10)]) ?></p>
-                    </div>
-                    <div class="form-group">
-                        <label><?= t('token_purchase_bonus_label') ?> (<?= htmlspecialchars($config['symbol'] ?? 'IRT') ?>)</label>
-                        <input type="number" name="token_purchase_bonus" value="<?= htmlspecialchars($config['token_purchase_bonus'] ?? 0) ?>" min="0" required>
-                        <p class="hint"><?= t('token_purchase_bonus_hint') ?></p>
-                    </div>
+                <div id="planRows"></div>
+                <div style="margin:4px 0 16px;">
+                    <button type="button" class="btn btn-secondary" id="addPlanBtn">+ <?= t('add_purchase_plan') ?></button>
                 </div>
                 <div class="current-config" style="margin-top:12px;margin-bottom:16px;">
-                    <p><strong><?= t('token_purchase_summary') ?>：</strong>
-                    <span id="purchaseSummary">
-                        <?= htmlspecialchars($config['token_purchase_price_usdt'] ?? 10) ?> USDT =
-                        <?= htmlspecialchars($config['token_purchase_amount'] ?? 1000) ?> <?= htmlspecialchars($config['symbol'] ?? 'IRT') ?>
-                        <?php if (!empty($config['token_purchase_bonus'])): ?>
-                            + <?= t('bonus_gift', ['amount' => $config['token_purchase_bonus'], 'symbol' => $config['symbol'] ?? 'IRT']) ?>
-                        <?php endif; ?>
-                    </span>
-                    </p>
+                    <p><strong><?= t('token_purchase_summary') ?>：</strong><span id="purchaseSummary"></span></p>
                 </div>
                 <button type="submit" class="btn btn-primary" id="savePurchaseBtn">
                     <?= t('save_purchase_settings') ?>
@@ -325,38 +304,116 @@
         const saveSettingsText = '<?= t('save_settings') ?>';
         const savePurchaseText = '<?= t('save_purchase_settings') ?>';
 
+        // ---- 代币购买多方案管理 ----
+        const initialPlans = <?= json_encode(array_values(purchasePlans())) ?>;
+        const planLabelTpl = '<?= t('purchase_plan_label') ?>';
+        const removePlanText = '<?= t('remove_plan') ?>';
+        const priceLabel = '<?= t('token_purchase_price_label') ?>';
+        const amountLabel = '<?= t('token_purchase_amount_label') ?>';
+        const bonusLabel = '<?= t('token_purchase_bonus_label') ?>';
+        const purchaseSymbol = '<?= htmlspecialchars($config['symbol'] ?? 'IRT', ENT_QUOTES) ?>';
+        const maxPlans = 6;
+        let plansData = initialPlans.map(function (p) {
+            return { price_usdt: p.price_usdt, token_amount: p.token_amount, bonus_amount: p.bonus_amount };
+        });
+
+        function updatePurchaseSummary() {
+            const summary = document.getElementById('purchaseSummary');
+            summary.textContent = plansData.map(function (p) {
+                let s = p.price_usdt + ' USDT = ' + p.token_amount + ' ' + purchaseSymbol;
+                if (parseInt(p.bonus_amount) > 0) s += ' + ' + p.bonus_amount + ' ' + purchaseSymbol;
+                return s;
+            }).join(' ； ');
+        }
+
+        function renderPlanRows() {
+            const wrap = document.getElementById('planRows');
+            wrap.innerHTML = '';
+            plansData.forEach(function (p, i) {
+                const row = document.createElement('div');
+                row.style.cssText = 'border:1px solid rgba(40,87,147,0.15);border-radius:12px;padding:12px 14px;margin-bottom:12px;background:rgba(255,255,255,0.5);';
+                const head = document.createElement('div');
+                head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;';
+                const title = document.createElement('strong');
+                title.textContent = planLabelTpl.replace('{n}', i + 1);
+                head.appendChild(title);
+                if (plansData.length > 1) {
+                    const rm = document.createElement('button');
+                    rm.type = 'button';
+                    rm.className = 'btn btn-secondary';
+                    rm.textContent = removePlanText;
+                    rm.onclick = function () { plansData.splice(i, 1); renderPlanRows(); };
+                    head.appendChild(rm);
+                }
+                row.appendChild(head);
+                const fields = document.createElement('div');
+                fields.className = 'form-row';
+                [['price_usdt', priceLabel + ' (USDT)', '1', '0.01'],
+                 ['token_amount', amountLabel + ' (' + purchaseSymbol + ')', '1', '1'],
+                 ['bonus_amount', bonusLabel + ' (' + purchaseSymbol + ')', '0', '1']].forEach(function (f) {
+                    const g = document.createElement('div');
+                    g.className = 'form-group';
+                    const lab = document.createElement('label');
+                    lab.textContent = f[1];
+                    const inp = document.createElement('input');
+                    inp.type = 'number';
+                    inp.min = f[2];
+                    inp.step = f[3];
+                    inp.required = true;
+                    inp.value = p[f[0]];
+                    inp.addEventListener('input', function () { plansData[i][f[0]] = inp.value; updatePurchaseSummary(); });
+                    g.appendChild(lab);
+                    g.appendChild(inp);
+                    fields.appendChild(g);
+                });
+                row.appendChild(fields);
+                wrap.appendChild(row);
+            });
+            updatePurchaseSummary();
+        }
+
+        document.getElementById('addPlanBtn').addEventListener('click', function () {
+            if (plansData.length >= maxPlans) return;
+            plansData.push({ price_usdt: 10, token_amount: 1000, bonus_amount: 0 });
+            renderPlanRows();
+        });
+
+        renderPlanRows();
+
         document.getElementById('purchaseForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const form = e.target;
             const alert = document.getElementById('purchaseAlert');
             const btn = document.getElementById('savePurchaseBtn');
-            const summary = document.getElementById('purchaseSummary');
 
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span> ' + savingText;
             alert.style.display = 'none';
 
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
             try {
                 const res = await fetch('/api/site-settings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        purchase_plans: plansData.map(function (p) {
+                            return {
+                                price_usdt: parseFloat(p.price_usdt) || 0,
+                                token_amount: parseInt(p.token_amount) || 0,
+                                bonus_amount: parseInt(p.bonus_amount) || 0
+                            };
+                        })
+                    })
                 });
                 const result = await res.json();
 
                 if (result.success) {
                     alert.className = 'alert alert-success';
                     alert.textContent = result.message || saveSuccessText;
-                    // update summary
-                    const price = data.token_purchase_price_usdt || '10';
-                    const amt = data.token_purchase_amount || '1000';
-                    const bonus = parseInt(data.token_purchase_bonus) || 0;
-                    let summaryText = price + ' USDT = ' + amt + ' IRT';
-                    if (bonus > 0) summaryText += ' + 赠送 ' + bonus + ' IRT';
-                    summary.textContent = summaryText;
+                    if (result.data && result.data.purchase_plans) {
+                        plansData = result.data.purchase_plans.map(function (p) {
+                            return { price_usdt: p.price_usdt, token_amount: p.token_amount, bonus_amount: p.bonus_amount };
+                        });
+                        renderPlanRows();
+                    }
                 } else {
                     alert.className = 'alert alert-error';
                     alert.textContent = result.message || saveFailedText;
