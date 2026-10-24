@@ -4,7 +4,7 @@ import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { apiFetch, errMessage } from '../../../src/api/apiFetch';
 import type { WalletInfo, WalletCreated } from '../../../src/api/types';
-import { BrandHeader } from '../../../src/components/BrandHeader';
+import { TopBar } from '../../../src/components/TopBar';
 import { SectionHeading } from '../../../src/components/Cond';
 import { Button } from '../../../src/components/Button';
 import { Empty, Loader } from '../../../src/components/StateView';
@@ -62,7 +62,7 @@ export default function WalletScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader />
+      <TopBar title={t('my_wallet', '我的钱包')} />
       <ScrollView
         refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} tintColor={colors.primary} />}
         contentContainerStyle={styles.list}

@@ -5,11 +5,11 @@ import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { apiFetch, errMessage } from '../../src/api/apiFetch';
 import type { BuyOrderData } from '../../src/api/types';
-import { BackBtn, BrandHeader } from '../../src/components/BrandHeader';
+import { TopBar } from '../../src/components/TopBar';
 import { Button, Spacer } from '../../src/components/Button';
 import { useAuth } from '../../src/context/auth';
 import { useLanguage } from '../../src/i18n/LanguageContext';
-import { colors, fonts, radius, spacing, typography } from '../../src/theme/theme';
+import { colors, fonts, radius, spacing } from '../../src/theme/theme';
 
 const TOKEN_SYMBOL = 'IRT';
 
@@ -54,9 +54,8 @@ export default function BuyScreen() {
   if (!isAuthed) {
     return (
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-        <BrandHeader right={<BackBtn onPress={() => router.back()} />} />
+        <TopBar title={titleText} showBack />
         <ScrollView contentContainerStyle={styles.scroll}>
-          <Text style={typography.title}>{titleText}</Text>
           <View style={styles.card}>
             <Text style={styles.hint}>{t('buy_need_login', '购买代币需要先登录。登录后在浏览器完成 GMPay 网络支付。')}</Text>
           </View>
@@ -68,9 +67,8 @@ export default function BuyScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader right={<BackBtn onPress={() => router.back()} />} />
+      <TopBar title={titleText} showBack />
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <Text style={typography.title}>{titleText}</Text>
         <Text style={styles.sub}>{t('buy_sub', '交易将跳转 GMPay 在线支付（USD 计价）')}</Text>
 
         <Spacer h={spacing.lg} />

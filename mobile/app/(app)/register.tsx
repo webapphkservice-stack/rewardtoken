@@ -4,12 +4,12 @@ import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, Vi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { apiFetch, errMessage } from '../../src/api/apiFetch';
 import type { TxResult } from '../../src/api/types';
-import { BackBtn, BrandHeader } from '../../src/components/BrandHeader';
+import { TopBar } from '../../src/components/TopBar';
 import { Button, Spacer } from '../../src/components/Button';
 import { Field } from '../../src/components/Field';
 import { useWalletAddress } from '../../src/hooks/walletStore';
 import { useLanguage } from '../../src/i18n/LanguageContext';
-import { colors, fonts, spacing, typography } from '../../src/theme/theme';
+import { colors, fonts, spacing } from '../../src/theme/theme';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -57,10 +57,9 @@ export default function RegisterScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader right={<BackBtn onPress={() => router.back()} />} />
+      <TopBar title={t('register_title', '注册上链')} showBack />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <Text style={typography.title}>{t('register_title', '注册上链')}</Text>
           <Text style={styles.sub}>{t('register_sub', '填写信息调用合约 register() 建立邀请关系')}</Text>
 
           <Spacer h={spacing.lg} />

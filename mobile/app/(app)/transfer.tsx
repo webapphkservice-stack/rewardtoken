@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { apiFetch, errMessage } from '../../src/api/apiFetch';
 import type { WalletInfo, TxResult } from '../../src/api/types';
-import { BackBtn, BrandHeader } from '../../src/components/BrandHeader';
+import { TopBar } from '../../src/components/TopBar';
 import { Button, Spacer } from '../../src/components/Button';
 import { Field } from '../../src/components/Field';
 import { useWalletInfo } from '../../src/hooks/data';
@@ -57,7 +57,7 @@ export default function TransferScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader right={<BackBtn onPress={() => router.back()} />} />
+      <TopBar title={t('transfer', '转账')} showBack />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.tabs}>

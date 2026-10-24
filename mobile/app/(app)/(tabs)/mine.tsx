@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
-import { BrandHeader } from '../../../src/components/BrandHeader';
+import { TopBar } from '../../../src/components/TopBar';
 import { SectionHeading } from '../../../src/components/Cond';
 import { useAuth } from '../../../src/context/auth';
 import { useLanguage } from '../../../src/i18n/LanguageContext';
@@ -25,7 +25,7 @@ export default function MineScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader />
+      <TopBar title={t('my', '我的')} />
       <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
         <SectionHeading title={t('personal_center', '个人中心')} />
 
@@ -87,7 +87,7 @@ export default function MineScreen() {
             style={styles.row}
             onPress={async () => {
               await logout();
-              router.replace('/(app)/(tabs)/index');
+              router.replace('/');
             }}
           >
             <Text style={[styles.rowLabel, { color: colors.danger }]}>{t('logout', '退出登录')}</Text>

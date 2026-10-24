@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BrandHeader } from '../../../src/components/BrandHeader';
+import { TopBar } from '../../../src/components/TopBar';
 import { SectionHeading } from '../../../src/components/Cond';
 import { Empty, Loader } from '../../../src/components/StateView';
 import { useLanguage } from '../../../src/i18n/LanguageContext';
@@ -25,7 +25,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader />
+      <TopBar title={t('home', '首页')} />
       <ScrollView
         refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} tintColor={colors.primary} />}
         contentContainerStyle={styles.list}

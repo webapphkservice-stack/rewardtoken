@@ -4,10 +4,10 @@ import { Alert, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { apiFetch, errMessage } from '../../src/api/apiFetch';
 import type { OrderItem } from '../../src/api/types';
-import { BackBtn, BrandHeader } from '../../src/components/BrandHeader';
+import { TopBar } from '../../src/components/TopBar';
 import { Empty, Loader } from '../../src/components/StateView';
 import { useLanguage } from '../../src/i18n/LanguageContext';
-import { colors, fonts, radius, spacing, typography } from '../../src/theme/theme';
+import { colors, fonts, radius, spacing } from '../../src/theme/theme';
 
 function fmtTime(ts?: number, localeFmt = 'zh-CN'): string {
   if (!ts) return '—';
@@ -49,14 +49,12 @@ export default function OrdersScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader right={<BackBtn onPress={() => router.back()} />} />
+      <TopBar title={t('my_orders', '我的订单')} showBack />
       <ScrollView
         refreshControl={<RefreshControl refreshing={false} onRefresh={load} tintColor={colors.primary} />}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={typography.title}>{t('my_orders', '我的订单')}</Text>
-
         {loading ? (
           <Loader />
         ) : error ? (

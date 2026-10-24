@@ -4,10 +4,10 @@ import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, Vi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Spacer } from '../../src/components/Button';
 import { Field } from '../../src/components/Field';
-import { BackBtn, BrandHeader } from '../../src/components/BrandHeader';
+import { TopBar } from '../../src/components/TopBar';
 import { useAuth } from '../../src/context/auth';
 import { useLanguage } from '../../src/i18n/LanguageContext';
-import { colors, spacing, typography } from '../../src/theme/theme';
+import { colors, spacing } from '../../src/theme/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -38,13 +38,12 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader right={<BackBtn onPress={() => router.back()} />} />
+      <TopBar title={t('login_title', '登录')} showBack />
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <Text style={typography.title}>{t('login_title', '登录')}</Text>
           <Text style={styles.sub}>{t('login_sub', '输入注册时设置的用户名与密码')}</Text>
 
           <Spacer h={spacing.lg} />

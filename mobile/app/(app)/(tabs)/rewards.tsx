@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../../src/context/auth';
 import { useLanguage } from '../../../src/i18n/LanguageContext';
-import { BrandHeader } from '../../../src/components/BrandHeader';
+import { TopBar } from '../../../src/components/TopBar';
 import { SectionHeading } from '../../../src/components/Cond';
 import { Empty, Loader } from '../../../src/components/StateView';
 import { useRewards } from '../../../src/hooks/data';
@@ -30,7 +30,7 @@ export default function RewardsScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader />
+      <TopBar title={t('reward_detail', '推荐奖励明细')} />
       <ScrollView
         refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} tintColor={colors.primary} />}
         contentContainerStyle={styles.list}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BrandHeader } from '../../../src/components/BrandHeader';
+import { TopBar } from '../../../src/components/TopBar';
 import { SectionHeading } from '../../../src/components/Cond';
 import { Empty, Loader } from '../../../src/components/StateView';
 import { useLanguage } from '../../../src/i18n/LanguageContext';
@@ -22,7 +22,7 @@ export default function BlocksScreen() {
   if (loading) {
     return (
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-        <BrandHeader />
+        <TopBar title={t('latest_blocks', '最新区块')} />
         <Loader />
       </SafeAreaView>
     );
@@ -30,7 +30,7 @@ export default function BlocksScreen() {
   if (error) {
     return (
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-        <BrandHeader />
+        <TopBar title={t('latest_blocks', '最新区块')} />
         <Empty text={t('load_failed', '加载失败')} hint={error} />
       </SafeAreaView>
     );
@@ -42,7 +42,7 @@ export default function BlocksScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
-      <BrandHeader />
+      <TopBar title={t('latest_blocks', '最新区块')} />
       <FlatList
         data={data?.blocks ?? []}
         keyExtractor={(item) => String(item.number)}
