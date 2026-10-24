@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(t('site_name_full')) ?> — 隐私政策</title>
-    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <link rel="stylesheet" href="/css/app.css?v=20261024logo">
     <script src="/js/app.js?v=6" defer></script>
     <style>
         .legal-page { max-width: 760px; margin: 40px auto; padding: 0 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; color: #222; line-height: 1.75; }

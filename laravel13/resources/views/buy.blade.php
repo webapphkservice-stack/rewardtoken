@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(t('token_purchase')) ?> - <?= htmlspecialchars($config['site_name_full'] ?? t('site_name_full')) ?></title>
-    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <link rel="stylesheet" href="/css/app.css?v=20261024logo">
     <script src="/js/app.js?v=6" defer></script>
     <style>
         .buy-container {

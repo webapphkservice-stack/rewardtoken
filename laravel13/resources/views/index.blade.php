@@ -21,18 +21,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(t('site_name_full')) ?> - <?= t('demo') ?></title>
-    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <link rel="stylesheet" href="/css/app.css?v=20261024logo">
     <script src="/js/app.js?v=6" defer></script>
 </head>
 <body>
     <div class="container">
         @include('partials.topbar')
         @include('partials.dock', ['active' => 'home'])
-
-        <div class="header">
-            <img class="site-logo" src="/images/logo.png" alt="<?= htmlspecialchars(t('site_name_full')) ?>">
-            <h1><?= htmlspecialchars(t('site_name_full')) ?></h1>
-        </div>
 
         <div class="card">
             <h2><?= t('contract_info') ?></h2>

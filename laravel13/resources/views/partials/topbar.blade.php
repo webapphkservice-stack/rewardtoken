@@ -4,7 +4,7 @@
     $topbarBaseURI = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 @endphp
 <header class="topbar">
-    <a class="topbar-brand" href="/"><?= htmlspecialchars(t('site_name_full')) ?></a>
+    <a class="topbar-brand" href="/"><img class="topbar-logo" src="/images/logo.png" alt="<?= htmlspecialchars(t('site_name_full')) ?>"><?= htmlspecialchars(t('site_name_full')) ?></a>
     <div class="topbar-actions">
         <button type="button" class="topbar-lang-btn" id="topbarLangBtn" aria-label="language">
             <img class="dock-icon" src="/images/en.png" alt="">
