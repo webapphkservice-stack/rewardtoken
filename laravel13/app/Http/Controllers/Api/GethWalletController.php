@@ -306,14 +306,6 @@ class GethWalletController extends Controller
                         $inviter = '0x0000000000000000000000000000000000000000';
                     }
 
-                    $contractAddress = readContractAddress();
-                    if (!$contractAddress) {
-                        throw new \Exception(t('contract_not_deployed'));
-                    }
-
-                    $data = encodeCall('register', ['address'], [$inviter]);
-                    $txHash = $this->signAndSendRaw($from, $contractAddress, $data, 2000000);
-
                     // 记录账户密码(用于登录，仅存哈希，不存私钥)
                     $accountsFile = storage_path('accounts.json');
                     $accounts = is_file($accountsFile) ? (json_decode((string) file_get_contents($accountsFile), true) ?: []) : [];
@@ -322,6 +314,19 @@ class GethWalletController extends Controller
                             throw new \Exception(t('username_taken'));
                         }
                     }
+                    // 同一钱包地址只能绑定一个账户：拦截同浏览器复用旧地址重复注册，避免覆盖原账号
+                    if (isset($accounts[$from])) {
+                        throw new \Exception(t('address_already_registered'));
+                    }
+
+                    $contractAddress = readContractAddress();
+                    if (!$contractAddress) {
+                        throw new \Exception(t('contract_not_deployed'));
+                    }
+
+                    $data = encodeCall('register', ['address'], [$inviter]);
+                    $txHash = $this->signAndSendRaw($from, $contractAddress, $data, 2000000);
+
                     try {
                         $accounts[$from] = [
                             'username' => $username,

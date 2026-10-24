@@ -141,3 +141,37 @@
         });
     }
 })();
+
+// 顶部栏交互：语言切换弹层 + 登录入口（独立于底部 Dock，terms/privacy 等无 navbar 页面也生效）
+(function () {
+    var langBtn = document.getElementById('topbarLangBtn');
+    var langPopup = document.getElementById('topbarLangPopup');
+    if (langBtn && langPopup) {
+        langBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            langPopup.classList.toggle('open');
+        });
+        document.addEventListener('click', function (e) {
+            if (!langPopup.contains(e.target) && !langBtn.contains(e.target)) {
+                langPopup.classList.remove('open');
+            }
+        });
+    }
+
+    var loginBtn = document.getElementById('topbarLoginBtn');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', function () {
+            var overlay = document.getElementById('loginOverlay');
+            if (overlay) {
+                var alertEl = document.getElementById('loginAlert');
+                if (alertEl) alertEl.style.display = 'none';
+                overlay.style.display = 'flex';
+                var u = document.getElementById('loginUsername');
+                if (u) u.focus();
+            } else {
+                // 无登录弹层的页面（条款/隐私）跳回首页登录
+                window.location.href = '/';
+            }
+        });
+    }
+})();

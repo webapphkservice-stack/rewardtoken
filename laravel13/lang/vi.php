@@ -288,6 +288,8 @@ return [
     'username' => 'Tên người dùng',
     'username_required' => 'Vui lòng nhập tên người dùng',
     'username_taken' => 'Tên người dùng đã được sử dụng',
+    'address_already_registered' => 'Địa chỉ ví này đã được đăng ký. Nhấn "Tạo ví mới" rồi đăng ký lại',
+    'create_new_wallet' => 'Tạo ví mới',
     'login_title' => 'Đăng nhập',
     'submit_login' => 'Đăng nhập',
     'login_missing_fields' => 'Vui lòng nhập tên người dùng và mật khẩu',

@@ -7,7 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(t('site_name_full')) ?> — 服务条款</title>
-    <link rel="stylesheet" href="/css/app.css?v=20260918login">
+    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <script src="/js/app.js?v=6" defer></script>
     <style>
         .legal-page { max-width: 760px; margin: 40px auto; padding: 0 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; color: #222; line-height: 1.75; }
         .legal-page h1 { font-size: 26px; font-weight: 700; margin: 0 0 8px; }
@@ -23,6 +24,7 @@
 </head>
 <body>
     <div class="legal-page">
+        @include('partials.topbar')
         <a class="nav-back" href="/">← 返回首页</a>
         <h1>服务条款</h1>
         <p class="meta">最后更新日期：2026 年 10 月 21 日</p>

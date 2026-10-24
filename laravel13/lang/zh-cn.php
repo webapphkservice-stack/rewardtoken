@@ -289,6 +289,8 @@ return [
     'username' => '用户名',
     'username_required' => '请输入用户名',
     'username_taken' => '用户名已被使用',
+    'address_already_registered' => '该钱包地址已注册，请点击"创建新钱包"后重新注册',
+    'create_new_wallet' => '创建新钱包',
     'login_title' => '登录',
     'submit_login' => '登录',
     'login_missing_fields' => '请输入用户名和密码',

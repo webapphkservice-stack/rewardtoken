@@ -12,8 +12,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(t('token_purchase')) ?> - <?= htmlspecialchars($config['site_name_full'] ?? t('site_name_full')) ?></title>
-    <link rel="stylesheet" href="/css/app.css?v=20260918buy">
-    <script src="/js/app.js?v=5" defer></script>
+    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <script src="/js/app.js?v=6" defer></script>
     <style>
         .buy-container {
             max-width: 520px;
@@ -296,6 +296,7 @@
     </style>
 </head>
 <body>
+    @include('partials.topbar')
     @include('partials.dock', ['active' => 'buy'])
 
     <div class="page-header" style="

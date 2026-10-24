@@ -21,11 +21,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(t('site_name_full')) ?> - <?= t('demo') ?></title>
-    <link rel="stylesheet" href="/css/app.css?v=20260918login">
-    <script src="/js/app.js?v=5" defer></script>
+    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <script src="/js/app.js?v=6" defer></script>
 </head>
 <body>
     <div class="container">
+        @include('partials.topbar')
         @include('partials.dock', ['active' => 'home'])
 
         <div class="header">

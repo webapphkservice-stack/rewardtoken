@@ -8,11 +8,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('my_title') ?> - <?= htmlspecialchars(t('site_name_full')) ?></title>
-    <link rel="stylesheet" href="/css/app.css?v=20260918share">
-    <script src="/js/app.js?v=5" defer></script>
+    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <script src="/js/app.js?v=6" defer></script>
 </head>
 <body>
     <div class="container">
+        @include('partials.topbar')
         @include('partials.dock', ['active' => 'my'])
 
         <div class="header">
@@ -191,6 +192,18 @@
             const select = document.getElementById('gethAccountSelect');
             const noAccounts = document.getElementById('gethNoAccounts');
             select.innerHTML = '';
+            // 已登录：始终固定展示登录账户（不依赖 eth_accounts 命中，避免回退显示其它账户）
+            if (loginAddress) {
+                accounts = [loginAddress];
+                noAccounts.style.display = 'none';
+                select.style.display = 'none';
+                if (loginUsername) {
+                    document.getElementById('usernameRow').style.display = 'flex';
+                    document.getElementById('accountUsername').textContent = loginUsername;
+                }
+                onAccountChange();
+                return;
+            }
             if (accounts.length === 0) {
                 noAccounts.style.display = 'block';
                 document.getElementById('accountInfo').style.display = 'none';
@@ -200,19 +213,6 @@
                 return;
             }
             noAccounts.style.display = 'none';
-            // 已登录：仅展示登录账户，隐藏下拉（避免切换其它账户）
-            if (loginAddress && accounts.indexOf(loginAddress) !== -1) {
-                accounts = [loginAddress];
-                select.style.display = 'none';
-                if (loginUsername) {
-                    document.getElementById('usernameRow').style.display = 'flex';
-                    document.getElementById('accountUsername').textContent = loginUsername;
-                }
-                const emptyWrap = document.createElement('option');
-                select.appendChild(emptyWrap);
-                onAccountChange();
-                return;
-            }
             accounts.forEach(a => {
                 const opt = document.createElement('option');
                 opt.value = a;
@@ -224,7 +224,7 @@
 
         function onAccountChange() {
             const select = document.getElementById('gethAccountSelect');
-            currentAddress = (loginAddress && accounts[0] === loginAddress) ? loginAddress : select.value;
+            currentAddress = loginAddress || select.value;
             document.getElementById('accountInfo').style.display = 'block';
             document.getElementById('walletAddress').textContent = currentAddress;
             document.getElementById('walletBalance').textContent = '<?= t('loading') ?>';

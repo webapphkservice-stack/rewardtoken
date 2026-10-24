@@ -288,6 +288,8 @@ return [
     'username' => 'Username',
     'username_required' => 'Please enter a username',
     'username_taken' => 'Username already taken',
+    'address_already_registered' => 'This wallet address is already registered. Tap "Create New Wallet" and register again',
+    'create_new_wallet' => 'Create New Wallet',
     'login_title' => 'Login',
     'submit_login' => 'Login',
     'login_missing_fields' => 'Please enter username and password',

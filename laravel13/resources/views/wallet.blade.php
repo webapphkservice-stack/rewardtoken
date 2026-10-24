@@ -8,11 +8,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('wallet_registration_title') ?> - <?= htmlspecialchars(t('site_name')) ?></title>
-    <link rel="stylesheet" href="/css/app.css?v=20260918share">
-    <script src="/js/app.js?v=5" defer></script>
+    <link rel="stylesheet" href="/css/app.css?v=20261024topbar">
+    <script src="/js/app.js?v=6" defer></script>
 </head>
 <body>
     <div class="container">
+        @include('partials.topbar')
         @include('partials.dock', ['active' => 'wallet'])
 
         <div class="card">
@@ -37,6 +38,7 @@
                     <button class="btn btn-secondary btn-sm" id="copyPkBtn" style="display:none;" onclick="copyPrivateKey()"><?= t('copy_private_key') ?></button>
                     <p class="private-key-warning" id="pkHint"><?= t('save_private_key_hint') ?></p>
                 </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="newWalletBtn" onclick="createNewWallet()"><?= t('create_new_wallet') ?></button>
             </div>
 
             <form id="registerForm">
@@ -124,6 +126,19 @@
             }
         }
         initWallet();
+
+        // 创建新钱包：清除本地复用的旧地址，重新生成（同浏览器注册第二个账号时必须使用新地址）
+        function createNewWallet() {
+            try { localStorage.removeItem('wallet_reg_addr'); } catch (e) {}
+            currentAddress = '';
+            registered = false;
+            document.getElementById('walletAddress').textContent = '<?= t('loading') ?>';
+            document.getElementById('pkValue').value = '';
+            document.getElementById('pkRow').style.display = '';
+            document.getElementById('pkHint').style.display = '';
+            document.getElementById('copyPkBtn').style.display = 'none';
+            initWallet();
+        }
 
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();

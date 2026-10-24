@@ -288,6 +288,8 @@ return [
     'username' => '用戶名',
     'username_required' => '請輸入用戶名',
     'username_taken' => '用戶名已被使用',
+    'address_already_registered' => '該錢包地址已註冊，請點擊「創建新錢包」後重新註冊',
+    'create_new_wallet' => '創建新錢包',
     'login_title' => '登入',
     'submit_login' => '登入',
     'login_missing_fields' => '請輸入用戶名和密碼',

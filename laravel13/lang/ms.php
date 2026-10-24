@@ -288,6 +288,8 @@ return [
     'username' => 'Nama Pengguna',
     'username_required' => 'Sila masukkan nama pengguna',
     'username_taken' => 'Nama pengguna telah digunakan',
+    'address_already_registered' => 'Alamat dompet ini telah didaftarkan. Klik "Cipta Dompet Baru" dan daftar semula',
+    'create_new_wallet' => 'Cipta Dompet Baru',
     'login_title' => 'Log Masuk',
     'submit_login' => 'Log Masuk',
     'login_missing_fields' => 'Sila masukkan nama pengguna dan kata laluan',

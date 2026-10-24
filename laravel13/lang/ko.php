@@ -288,6 +288,8 @@ return [
     'username' => '사용자 이름',
     'username_required' => '사용자 이름을 입력하세요',
     'username_taken' => '이미 사용 중인 사용자 이름입니다',
+    'address_already_registered' => '이 지갑 주소는 이미 등록되었습니다. "새 지갑 만들기"를 눌러 다시 등록하세요',
+    'create_new_wallet' => '새 지갑 만들기',
     'login_title' => '로그인',
     'submit_login' => '로그인',
     'login_missing_fields' => '사용자 이름과 비밀번호를 입력하세요',

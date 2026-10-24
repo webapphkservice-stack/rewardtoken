@@ -288,6 +288,8 @@ return [
     'username' => 'ชื่อผู้ใช้',
     'username_required' => 'กรุณากรอกชื่อผู้ใช้',
     'username_taken' => 'ชื่อผู้ใช้นี้ถูกใช้แล้ว',
+    'address_already_registered' => 'ที่อยู่กระเป๋านี้ถูกลงทะเบียนแล้ว กรุณากด "สร้างกระเป๋าใหม่" แล้วลงทะเบียนใหม่',
+    'create_new_wallet' => 'สร้างกระเป๋าใหม่',
     'login_title' => 'เข้าสู่ระบบ',
     'submit_login' => 'เข้าสู่ระบบ',
     'login_missing_fields' => 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน',

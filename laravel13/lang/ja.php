@@ -288,6 +288,8 @@ return [
     'username' => 'ユーザー名',
     'username_required' => 'ユーザー名を入力してください',
     'username_taken' => 'ユーザー名は既に使用されています',
+    'address_already_registered' => 'このウォレットアドレスは登録済みです。「新しいウォレットを作成」をタップして再登録してください',
+    'create_new_wallet' => '新しいウォレットを作成',
     'login_title' => 'ログイン',
     'submit_login' => 'ログイン',
     'login_missing_fields' => 'ユーザー名とパスワードを入力してください',
