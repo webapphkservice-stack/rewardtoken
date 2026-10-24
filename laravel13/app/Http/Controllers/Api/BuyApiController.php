@@ -68,6 +68,11 @@ class BuyApiController extends Controller
                 'order_id' => $orderId,
                 'currency' => 'USD',
                 'amount' => $totalUsdtStr,
+                // 指定收款资产/链，网关下单时立即绑定收款方式并返回收款地址；
+                // 若不指定，订单处于"待选择收款方式"状态，查询接口会返回 status=4，
+                // 前端轮询会误判为支付失败而自动关闭弹窗。
+                'token' => 'USDT',
+                'network' => 'bsc',
                 'notify_url' => $notifyUrl,
             ];
             ksort($params);
