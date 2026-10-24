@@ -41,7 +41,7 @@ class SiteSettingsController extends Controller
             }
 
             if (array_key_exists('token_purchase_price_usdt', $input)) {
-                $config['token_purchase_price_usdt'] = is_numeric($input['token_purchase_price_usdt']) ? max(1, (float) $input['token_purchase_price_usdt']) : 10;
+                $config['token_purchase_price_usdt'] = is_numeric($input['token_purchase_price_usdt']) ? max(0.01, (float) $input['token_purchase_price_usdt']) : 10;
             }
             if (array_key_exists('token_purchase_amount', $input)) {
                 $config['token_purchase_amount'] = is_numeric($input['token_purchase_amount']) ? max(1, (int) $input['token_purchase_amount']) : 1000;
@@ -61,7 +61,7 @@ class SiteSettingsController extends Controller
                         continue;
                     }
                     $plans[] = [
-                        'price_usdt' => max(1, (float) $p['price_usdt']),
+                        'price_usdt' => max(0.01, (float) $p['price_usdt']),
                         'token_amount' => max(1, (int) $p['token_amount']),
                         'bonus_amount' => is_numeric($p['bonus_amount'] ?? null) ? max(0, (int) $p['bonus_amount']) : 0,
                     ];

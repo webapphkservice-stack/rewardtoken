@@ -38,7 +38,7 @@ function purchasePlans(): array
                 continue;
             }
             $plans[] = [
-                'price_usdt' => max(1, (float) $p['price_usdt']),
+                'price_usdt' => max(0.01, (float) $p['price_usdt']),
                 'token_amount' => max(1, (int) $p['token_amount']),
                 'bonus_amount' => is_numeric($p['bonus_amount'] ?? null) ? max(0, (int) $p['bonus_amount']) : 0,
             ];

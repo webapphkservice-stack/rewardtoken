@@ -348,7 +348,7 @@
                 row.appendChild(head);
                 const fields = document.createElement('div');
                 fields.className = 'form-row';
-                [['price_usdt', priceLabel + ' (USDT)', '1', '0.01'],
+                [['price_usdt', priceLabel + ' (USDT)', '0.01', '0.01'],
                  ['token_amount', amountLabel + ' (' + purchaseSymbol + ')', '1', '1'],
                  ['bonus_amount', bonusLabel + ' (' + purchaseSymbol + ')', '0', '1']].forEach(function (f) {
                     const g = document.createElement('div');
