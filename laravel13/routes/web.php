@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeployController as AdminDeployController;
+use App\Http\Controllers\Admin\MembersController as AdminMembersController;
 use App\Http\Controllers\Admin\NodeController as AdminNodeController;
 use App\Http\Controllers\Admin\RewardsController as AdminRewardsController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
@@ -83,6 +84,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/deploy', [AdminDeployController::class, 'index'])->name('admin.deploy');
         Route::get('/settings', [AdminSettingsController::class, 'index'])->name('admin.settings');
         Route::get('/rewards', [AdminRewardsController::class, 'index'])->name('admin.rewards');
+        Route::get('/members', [AdminMembersController::class, 'index'])->name('admin.members');
         Route::get('/node', [AdminNodeController::class, 'index'])->name('admin.node');
     });
 });

@@ -398,4 +398,14 @@ return [
 	    'payment_expired' => 'การชำระเงินหมดอายุ',
 	    'buy_title' => 'ซื้อ {symbol}',
 	    'login_to_buy' => 'เข้าสู่ระบบเพื่อซื้อ',
-	];
+    'member_list' => 'รายการสมาชิก',
+    'member_list_desc' => 'ดูสมาชิกทั้งหมดและภาพรวมสินทรัพย์',
+    'total_members' => 'จำนวนสมาชิก',
+    'member_details' => 'รายละเอียดสมาชิก',
+    'wallet_address' => 'ที่อยู่กระเป๋าเงิน',
+    'register_time' => 'เวลาสมัคร',
+    'token_balance' => 'ยอดคงเหลือโทเคน',
+    'purchase_order_count' => 'จำนวนคำสั่งซื้อ',
+    'total_spent_usdt' => 'ซื้อสะสม',
+    'no_members' => 'ยังไม่มีสมาชิก',
+];

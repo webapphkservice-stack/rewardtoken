@@ -21,6 +21,9 @@
         <a href="/admin/rewards" class="<?= $currentPath === 'admin/rewards' ? 'active' : '' ?>">
             <span class="icon">💰</span> <?= t('reward_records') ?>
         </a>
+        <a href="/admin/members" class="<?= $currentPath === 'admin/members' ? 'active' : '' ?>">
+            <span class="icon">👥</span> <?= t('member_list') ?>
+        </a>
         <a href="/admin/node" class="<?= $currentPath === 'admin/node' ? 'active' : '' ?>">
             <span class="icon">🖥️</span> <?= t('node_management') ?>
         </a>
